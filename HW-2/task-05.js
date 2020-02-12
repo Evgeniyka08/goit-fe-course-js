@@ -2,8 +2,7 @@
 const checkForSpam = function(massage) {
   let string = massage.toLowerCase();
 
-  if (string.includes("spam")) return true;
-  if (string.includes("sale")) return true;
+  if (string.includes("spam") || string.includes("sale")) return true;
   return false;
 };
 console.log(checkForSpam("Latest technology news")); // false
