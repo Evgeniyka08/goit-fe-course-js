@@ -1,39 +1,65 @@
 "use strict";
-import galleryItems from "./gallery-items.js";
-const gallery = document.querySelector(".js-gallery");
-const galleryOnClickImage = gallery.addEventListener("click", handleClickImage);
+import images from "./gallery-items.js";
 
-insertGallery(galleryItems);
-function insertGallery(galleryItems) {
-  galleryItems.forEach(item => {
+const gallery = document.querySelector(".js-gallery");
+gallery.addEventListener("click", handleGalleryClick);
+
+const closeModalBtn = document.querySelector(`[data-action="close-lightbox"]`);
+const lightbox = document.querySelector(".js-lightbox");
+closeModalBtn.addEventListener("click", handleCloseModal);
+
+const biggerImage = document.querySelector(".lightbox__image");
+const overlay = document.querySelector(".lightbox__content");
+overlay.addEventListener("click", handleCloseModal);
+
+createGallery(images);
+
+function createGallery(images) {
+  images.forEach((image) => {
     let li = document.createElement("li");
 
     li.insertAdjacentHTML(
       "afterbegin",
-      `<span
+      `<a
           class="gallery__link"
-          href="${item.original}"
+          href="${image.original}"
         >
           <img
             class="gallery__image"
-            src="${item.preview}"
-            data-source="${item.original}"
-            alt="${item.description}"
+            src="${image.preview}"
+            data-source="${image.original}"
+            alt="${image.description}"
           />
-        </span>`
+        </a>`
     );
     gallery.append(li);
   });
 }
 
-function handleClickImage(e) {
-  const lightbox = document.querySelector(".js-lightbox");
-  const wideImage = document.querySelector(".lightbox__image");
-  wideImage.src = e.target.dataset.source;
-  console.log(wideImage);
+function handleGalleryClick(event) {
+  event.preventDefault();
+  window.addEventListener("keydown", handleKeyPress);
+  biggerImage.src = event.target.dataset.source;
+  biggerImage.alt = event.target.alt;
   lightbox.classList.add("is-open");
+}
 
-  console.log(wideImage);
+function handleCloseModal(event) {
+  if (event.target != event.currentTarget) {
+    return;
+  }
+  window.removeEventListener("keydown", handleKeyPress);
+  lightbox.classList.remove("is-open");
+  biggerImage.src = "";
+  biggerImage.alt = "";
+}
 
-  console.log(e.target.src);
+function handleKeyPress(event) {
+  if (event.code != "Escape") {
+    return;
+  }
+
+  lightbox.classList.remove("is-open");
+  biggerImage.src = "";
+  biggerImage.alt = "";
 }
